@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 from _data import *
 from _error import *
@@ -15,7 +15,7 @@ import io
 
 # Ph 13. Quasiquotation
 #       lex: ","와 ",@", "`"를 인식하도록 수정함
-#       read_expr: "`"를 quasiquote로, ","를 unquote로, ",@"를 unquote-splicing으로 바꾸도록 수정함 
+#       read_expr: "`"를 quasiquote로, ","를 unquote로, ",@"를 unquote-splicing으로 바꾸도록 수정함
 
 # Ph 14. Multiline 처리
 #       클래스: Reader
@@ -24,11 +24,13 @@ import io
 #       read_list에서 전에 '('를 읽었다는 가정을 없애고 match로 진행함
 
 # 전역변수 reader
-YY_reader = None   # The historical prefix "YY_" is attached to make it global
+YY_reader = None  # The historical prefix "YY_" is attached to make it global
+
 
 def slurp(path: str) -> str:
-    with io.open(path, mode='r', encoding='utf-8') as reader:
+    with io.open(path, mode="r", encoding="utf-8") as reader:
         return reader.read()
+
 
 def read_esc_char(srep: str) -> tuple[str, int]:
     """정수에 대한 문자를 반환하기 위한 것이지만 그냥 \"만 건너뛰고 '\"'와 2를 반환하는 것으로 구현함"""
@@ -46,7 +48,8 @@ def read_esc_char(srep: str) -> tuple[str, int]:
     #     return c, len(oct_str)+1
     if srep[1] == '"':
         return srep[:2], 2
-    return None, 1                  # 오류(unknown escape sequence)
+    return None, 1  # 오류(unknown escape sequence)
+
 
 class Reader:
     def __init__(self):
@@ -56,7 +59,8 @@ class Reader:
         self._depth = 0
         self._prompt1 = ">  "
         self._prompt2 = ".. "
-    def next_token(self) -> str:        # returns the token and set it to LA
+
+    def next_token(self) -> str:  # returns the token and set it to LA
         s = self._input
         eols = ["\n", "\r"]
         ws = [" ", "\t"] + eols
@@ -74,14 +78,14 @@ class Reader:
                 self._input = s
                 self._column = 0
                 continue
-            if s.startswith(",@"):      # ",@" should be tested before ","
+            if s.startswith(",@"):  # ",@" should be tested before ","
                 tok = ",@"
             elif s[0] in "().',`":
                 tok = s[0]
             elif s[0] == '"':
                 i = 1
                 while i < len(s) and s[i] not in ['"'] + eols:
-                    if s[i] == '\\':
+                    if s[i] == "\\":
                         c, k = read_esc_char(s[i:])
                         i += k
                         continue
@@ -89,12 +93,12 @@ class Reader:
                 if i == len(s) or s[i] in eols:
                     print(f"오류: 토큰 '{s[:i]}' 부근에서 어휘 오류")
                     # 오류 복구: 닫는 따옴표를 토큰에 추가
-                    if i != len(s): # eols를 만난 경우
-                        i -= 1      # eol 문자 전까지 내용을 문자열 토큰으로 만들기 위함
+                    if i != len(s):  # eols를 만난 경우
+                        i -= 1  # eol 문자 전까지 내용을 문자열 토큰으로 만들기 위함
                     tok = s[:i] + '"'
                     s = s[i:]
-                else:               # s[i] == '"':
-                    i += 1      # '"'를 읽음
+                else:  # s[i] == '"':
+                    i += 1  # '"'를 읽음
                     tok = s[:i]
                     # s = s[i:]
             else:
@@ -102,7 +106,9 @@ class Reader:
                 tok = toks[0]
             tlen = len(tok)
             self._input = s[tlen:]
-            self._column += tlen        # 문자열 리터럴의 경우 _column이 작아지는 오류가 발생할 수 있음
+            self._column += (
+                tlen  # 문자열 리터럴의 경우 _column이 작아지는 오류가 발생할 수 있음
+            )
             self._LA = tok
             return tok
         if self._depth > 0:
@@ -111,11 +117,14 @@ class Reader:
         tok = ""
         self._LA = tok
         return tok
+
     def match(self, tok) -> None:
         if tok != self._LA:
             print(f"오류: 토큰 '{YY_reader.LA()}' 부근에서 어휘 오류")
+
     def LA(self) -> str:
         return self._LA
+
     def read(self) -> str:
         try:
             self._input = input(self._prompt1)
@@ -123,6 +132,7 @@ class Reader:
             return ""
         else:
             return self._input
+
     def read2(self) -> str:
         try:
             self._input = input(self._prompt2 + self.indent())
@@ -130,18 +140,25 @@ class Reader:
             return ""
         else:
             return self._input
+
     def readfile(self, fname) -> str:
         self._input = slurp(fname)
+
     def nestin(self) -> None:
         self._depth += 1
+
     def nestout(self) -> None:
         self._depth -= 1
+
     def indent(self) -> str:
         return self._depth * " "
+
     def remains(self) -> str:
         return self._input
 
-YY_reader = Reader()   # The historical prefix "YY_" is attached to make it global
+
+YY_reader = Reader()  # The historical prefix "YY_" is attached to make it global
+
 
 def read_expr() -> Data:
     if YY_reader.LA() == "(":
@@ -188,16 +205,18 @@ def read_expr() -> Data:
         return data
     # for test: return mkint(1910)
 
+
 def read_atom(s: str) -> Data:
     """read an integer, nil, or a string"""
-    if s.isdigit() or (len(s) > 1 and (s[0] == '+' or s[0] == '-')):
+    if s.isdigit() or (len(s) > 1 and (s[0] == "+" or s[0] == "-")):
         return mkint(int(s))
-    elif s == '공':
+    elif s == "공":
         return nil
     elif s[0] == '"':
         return mkstr(s)
     else:
-        return mksym(s)         # 맞는 심볼만 검사 후 raise SyntaxError를 할 수도 있음
+        return mksym(s)  # 맞는 심볼만 검사 후 raise SyntaxError를 할 수도 있음
+
 
 def read_list() -> Data:
     """read a list except the leading '('"""
@@ -205,28 +224,29 @@ def read_list() -> Data:
     YY_reader.nestin()
     YY_reader.next_token()
     result = nil
-    if YY_reader.LA() == ')':
+    if YY_reader.LA() == ")":
         YY_reader.nestout()
-        YY_reader.match(')')
+        YY_reader.match(")")
         YY_reader.next_token()
         return result
     fst = read_expr()  # retract tok and read an expression
     lst = cons(fst, nil)
     prev = lst
-    while YY_reader.LA() != ')' and YY_reader.LA() != '.':
-        elem = read_expr()    # using the lookahead
+    while YY_reader.LA() != ")" and YY_reader.LA() != ".":
+        elem = read_expr()  # using the lookahead
         last = cons(elem, nil)
         prev.setcdr(last)
         prev = last
-    if YY_reader.LA() == '.':
-        YY_reader.match('.')    #s1 = s2 였었나? YY_reader 도입 전에는 match('.')
+    if YY_reader.LA() == ".":
+        YY_reader.match(".")  # s1 = s2 였었나? YY_reader 도입 전에는 match('.')
         _ = YY_reader.next_token()
         elem = read_expr()
-        prev.setcdr(elem)   # last.setcdr(elem)와 같음. 이 시점에서는 assert(_ == ')')
+        prev.setcdr(elem)  # last.setcdr(elem)와 같음. 이 시점에서는 assert(_ == ')')
     YY_reader.nestout()
-    YY_reader.match(')')
+    YY_reader.match(")")
     YY_reader.next_token()
     return lst
+
 
 def _main_p():
     """test function for parsing"""
@@ -237,6 +257,7 @@ def _main_p():
             print(expr)
         except SyntaxError:
             print("Syntax Error")
+
 
 if __name__ == "__main__":
     _main_p()

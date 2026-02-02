@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 # Ph 4(eval): Pair.car() and Pair.cdr()
 #             global car(Data) and cdr(Data)
@@ -29,102 +29,139 @@
 
 from _error import ErrType, ErrSyntax
 
+
 class Data:
     """클래스 Data는 머꼬의 모든 데이터 클래스의 부모 클래스입니다."""
+
     def __init__(self):
         """Data 클래스는 추상 클래스이므로 비워 두었습니다."""
         pass
+
     def ispair(self) -> bool:
         return False
+
     def isnil(self) -> bool:
         return False
+
     def issymbol(self) -> bool:
         return False
+
     def isint(self) -> bool:
         return False
+
     def isstr(self) -> bool:
         return False
+
     def isbuiltin(self) -> bool:
         return False
+
     def isclosure(self) -> bool:
         return False
+
     def ismacro(self) -> bool:
         return False
+
 
 class Nil(Data):
     def __init__(self):
         pass
+
     def __str__(self):
         return "공"
+
     def isnil(self) -> bool:
         return True
+
 
 class Pair(Data):
     def __init__(self, car_val: Data, cdr_val: Data):
         self._car, self._cdr = car_val, cdr_val
+
     def ispair(self) -> bool:
         return True
+
     def __str__(self) -> str:
         rval = f"({self._car}"
         tail = self._cdr
         while not tail.isnil():
-            if tail.ispair():               # Bug230111: self.cdr.ispair() -> tail.ispair()
+            if tail.ispair():  # Bug230111: self.cdr.ispair() -> tail.ispair()
                 rval += f" {tail._car}"
                 tail = tail._cdr
             else:
                 rval += f" . {tail}"
-                break                       # break가 꼭 필요함
+                break  # break가 꼭 필요함
         rval += ")"
         return rval
+
     def setcar(self, car_val: Data) -> None:
         self._car = car_val
+
     def setcdr(self, cdr_val: Data) -> None:
         self._cdr = cdr_val
+
     def car(self) -> Data:
         return self._car
+
     def cdr(self) -> Data:
         return self._cdr
+
 
 class Symbol(Data):
     def __init__(self, s: str):
         self._val = s
+
     def issymbol(self) -> bool:
         return True
+
     def __str__(self) -> str:
         return self._val
+
     def value(self) -> str:
         return self._val
+
 
 class Integer(Data):
     def __init__(self, i: int):
         self._val = i
+
     def isint(self) -> bool:
         return True
+
     def __str__(self) -> str:
         return str(self._val)
+
     def value(self) -> int:
         return self._val
+
 
 class String(Data):
     def __init__(self, s: str):
         self._val = s
+
     def isstr(self) -> bool:
         return True
+
     def __str__(self) -> str:
-        return self._val                # Des250429: f'"{self._val}"'로 했다가 바꾸었음
+        return self._val  # Des250429: f'"{self._val}"'로 했다가 바꾸었음
+
     def value(self) -> str:
-        return self._val
+        return self._val.strip('"')
+
 
 class Builtin(Data):
     def __init__(self, fn):
         self._fun = fn
+
     def isbuiltin(self) -> bool:
         return not super().isbuiltin()
+
     def __str__(self) -> str:
         fname = f"{self._fun}".split()[2]
         return f"#<내장 함수: {fname}>"
+
     def fun(self):
         return self._fun
+
 
 class Closure(Data):
     def __init__(self, env: Data, params: Data, body: Data):
@@ -136,24 +173,31 @@ class Closure(Data):
             raise ErrSyntax()
         p = params
         while not p.isnil():
-            if p.issymbol():    # the last symbol such as c in (f a b . c)
+            if p.issymbol():  # the last symbol such as c in (f a b . c)
                 break
             elif not p.ispair() or not car(p).issymbol():
                 raise ErrType("<#클로저>")
             p = cdr(p)
         self._val = cons(env, cons(params, body))
+
     def isclosure(self) -> bool:
         return not super().isclosure()
+
     def __str__(self) -> str:
         return f"#<클로저>"
-    def val(self) -> Data:          # returns the closure value (lambda)
+
+    def val(self) -> Data:  # returns the closure value (lambda)
         return self._val
+
     def env(self) -> Data:
         return car(self._val)
+
     def params(self) -> Data:
         return car(cdr(self._val))
+
     def body(self) -> Data:
         return cdr(cdr(self._val))
+
 
 class Macro(Data):
     def __init__(self, env: Data, params: Data, body: Data):
@@ -161,42 +205,54 @@ class Macro(Data):
             raise ErrSyntax()
         p = params
         while not p.isnil():
-            if p.issymbol():    # the last symbol such as c in (f a b . c)
+            if p.issymbol():  # the last symbol such as c in (f a b . c)
                 break
             elif not p.ispair() or not car(p).issymbol():
                 raise ErrType("<#매크로>")
             p = cdr(p)
         self._val = cons(env, cons(params, body))
+
     def ismacro(self) -> bool:
         return True
+
     def __str__(self) -> str:
         return f"#<매크로>"
-    def val(self) -> Data:          # returns the closure value (lambda)
+
+    def val(self) -> Data:  # returns the closure value (lambda)
         return self._val
+
 
 def cons(car_val: Data, cdr_val: Data) -> Data:
     return Pair(car_val, cdr_val)
 
+
 def car(p: Pair) -> Data:
     return p.car()
+
 
 def cdr(p: Pair) -> Data:
     return p.cdr()
 
+
 def mkint(ival: int) -> Data:
     return Integer(ival)
+
 
 def mksym(sval: str) -> Data:
     return Symbol(sval)
 
+
 def mkstr(sval: str) -> Data:
     return String(sval)
+
 
 def mkbuiltin(fn) -> Data:
     return Builtin(fn)
 
+
 def mkclosure(env: Data, params: Data, body: Data) -> Data:
     return Closure(env, params, body)
+
 
 def mkmacro(env: Data, params: Data, body: Data) -> Data:
     return Macro(env, params, body)
@@ -204,11 +260,15 @@ def mkmacro(env: Data, params: Data, body: Data) -> Data:
 
 nil = Nil()
 
+
 def islist(d: Data) -> bool:
     if d.isnil():
         return True
     else:
-        return d.ispair() and islist(cdr(d))        # Bug_20230104_a: cdr(d).ispair() -> islist(cdr(d))
+        return d.ispair() and islist(
+            cdr(d)
+        )  # Bug_20230104_a: cdr(d).ispair() -> islist(cdr(d))
+
 
 def cplist(ls: Data) -> Data:
     if ls.isnil():
@@ -222,6 +282,7 @@ def cplist(ls: Data) -> Data:
         ls = cdr(ls)
     return head
 
+
 def allsymbols(params: Data) -> None:
     p = params
     while not p.isnil():
@@ -229,7 +290,8 @@ def allsymbols(params: Data) -> None:
             raise ErrType("<#클로저>")
         p = cdr(p)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     print(mkint(1910))
     print(mksym("안녕"))
     print(mkstr("안녕, 문자열?"))
