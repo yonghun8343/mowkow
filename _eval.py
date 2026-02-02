@@ -3,6 +3,7 @@
 from _data import *
 from _parse import *
 from _error import IsVerbose, eprint, ErrLisp, ErrSyntax, ErrUnbound, ErrArgs, ErrType
+import os
 
 # Ph 8
 #       global isternary(Data): 인수 개수가 3개인지 검사
@@ -417,6 +418,60 @@ def mk_eval(expr: Data, env: Data) -> Data:
             val = mk_eval(body, local_env)  # '잠시'의 body 계산
             # env는 그대로이므로 local_env를 삭제하고 회복하는 과정이 필요 없음
             return val
+        if fun.value() == "불러오기":  # 키워드 '불러오기'(load) 처리
+            if not isunary(args):
+                raise ErrArgs("불러오기")
+            filename_data = car(args)
+            if not filename_data.isstr():
+                raise ErrType("불러오기")
+            filename = filename_data.value()
+
+            # 1. 경로 계산
+            path = envget(env, mksym("현재파일"))  # 현재 실행 중인 파일 경로 가져오기
+            base_dir = os.path.dirname(path.value())
+            full_filename = os.path.join(base_dir, filename)
+
+            if not os.path.exists(full_filename):
+                eprint(f"소스 파일 '{full_filename}'를 찾을 수 없습니다.")
+                return None
+
+            # 2. [중요] 현재 Reader 상태 백업 (Stack 구조 흉내)
+            # _parse.py의 YY_reader 객체 내부 변수들을 백업합니다.
+            old_input = YY_reader._input
+            old_LA = YY_reader._LA
+            old_column = YY_reader._column
+            old_depth = YY_reader._depth
+
+            # 3. "현재파일" 변수 업데이트 (중첩 load를 위해 필요)
+            # 파일 B가 또 다른 파일을 불러올 때를 대비해 환경 변수를 잠시 바꿔줍니다.
+            envset(env, mksym("현재파일"), mkstr(full_filename))
+
+            try:
+                # 4. 새 파일 로드 및 실행
+                YY_reader.readfile(full_filename)
+                YY_reader.next_token()  # 첫 토큰 장전
+
+                while YY_reader.remains() != "":
+                    try:
+                        expr = read_expr()
+                        result = mk_eval(expr, env)
+                        if result is not None:
+                            eprint(result)
+                    except ErrLisp as err:
+                        eprint(f"오류: {err}")
+                        break  # 오류 발생 시 해당 파일 로드 중단
+
+            finally:
+                # 5. [중요] Reader 상태 및 환경 복구
+                YY_reader._input = old_input
+                YY_reader._LA = old_LA
+                YY_reader._column = old_column
+                YY_reader._depth = old_depth
+
+                # 환경 변수 "현재파일"도 원래대로(파일 A로) 되돌려 놔야 함
+                envset(env, mksym("현재파일"), path)
+
+            return None
 
     # builtin functions, lambda, and macro
 

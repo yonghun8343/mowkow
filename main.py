@@ -9,7 +9,7 @@ import sys
 import argparse
 from typing import Any, Dict, List, Optional, Sequence, Iterable, NoReturn
 
-from _data import Data, nil, mksym, mkbuiltin
+from _data import Data, nil, mksym, mkbuiltin, mkstr
 from _parse import YY_reader, read_expr
 from _error import IsVerbose, eprint, ErrLisp
 from _eval import (
@@ -231,6 +231,7 @@ def main():
 
     for file in arg.in_files:
         if os.path.exists(file):
+            envset(env, mksym("현재파일"), mkstr(file))
             load_file(env, file)
         else:
             eprint(f"소스 파일 '{file}'를 찾을 수 없습니다.")

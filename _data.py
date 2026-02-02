@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 # Ph 4(eval): Pair.car() and Pair.cdr()
 #             global car(Data) and cdr(Data)
@@ -113,7 +113,7 @@ class String(Data):
     def __str__(self) -> str:
         return self._val                # Des250429: f'"{self._val}"'로 했다가 바꾸었음
     def value(self) -> str:
-        return self._val
+        return self._val.strip('"')
 
 class Builtin(Data):
     def __init__(self, fn):
