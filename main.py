@@ -36,6 +36,9 @@ from _eval import (
     builtin_read,
     builtin_write,
     builtin_gensym,
+    builtin_logand,
+    builtin_logor,
+    builtin_logxor,
 )
 
 import argparse
@@ -208,6 +211,9 @@ def main():
     envset(env, mksym("읽기"), mkbuiltin(builtin_read))
     envset(env, mksym("쓰기"), mkbuiltin(builtin_write))
     envset(env, mksym("_모"), mkbuiltin(builtin_gensym))
+    envset(env, mksym("비트곱"), mkbuiltin(builtin_logand))
+    envset(env, mksym("비트합"), mkbuiltin(builtin_logor))
+    envset(env, mksym("베타합"), mkbuiltin(builtin_logxor))
 
     argparser = KoreanArgumentParser(description="머꼬 해석기", prog="mk")
 

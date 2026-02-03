@@ -269,6 +269,36 @@ def builtin_write(args: Data, terminator="\n") -> None:
         print("()", end=terminator)
 
 
+def builtin_logand(args: Data) -> Data:
+    """(비트곱 12 10) -> 8"""
+    val = -1
+    p = args
+    while not p.isnil():
+        val &= car(p).value()
+        p = cdr(p)
+    return mkint(val)
+
+
+def builtin_logor(args: Data) -> Data:
+    """(비트합 1 2) -> 3"""
+    val = 0
+    p = args
+    while not p.isnil():
+        val |= car(p).value()
+        p = cdr(p)
+    return mkint(val)
+
+
+def builtin_logxor(args: Data) -> Data:
+    """(배타합 12 10) -> 6"""
+    val = 0
+    p = args
+    while not p.isnil():
+        val ^= car(p).value()
+        p = cdr(p)
+    return mkint(val)
+
+
 # 환경
 #   mkenv(parent): 부모 환경이 parent인 환경을 만든다.
 #   envget(env, symbol): 환경 env에서 이름 symbol을 찾는다.
@@ -291,6 +321,8 @@ def envget(env: Data, symbol: Data) -> Data:
         if car(bind).value() == symbol.value():
             return cdr(bind)
         binds = cdr(binds)
+    print(env)
+    print(symbol)
     if parent.isnil():
         raise ErrUnbound(symbol.value())
     return envget(parent, symbol)
