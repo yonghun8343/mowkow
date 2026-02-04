@@ -72,7 +72,7 @@ class Reader:
                 continue
             if s[0] in ";":
                 i = 0
-                while s[i] not in eols:
+                while i < len(s) and s[i] not in eols:
                     i += 1
                 s = s[i:]
                 self._input = s
