@@ -277,6 +277,52 @@ def builtin_newline(args: Data) -> None:
     print()
 
 
+def builtin_save_file(args: Data) -> Data:
+    """
+    (굽기 "파일명" 데이터리스트)
+    리스트에 있는 정수들을 바이트로 변환해 파일에 저장
+    """
+    fname = "굽기"
+
+    if args.isnil() or cdr(args).isnil():
+        raise ErrArgs(f"{fname}: 파일명과 데이터 리스트가 필요합니다.")
+
+    filename = car(args).value()  # 첫 번째 인자: 파일명
+    data_list = car(cdr(args))  # 두 번째 인자: 데이터 리스트
+
+    # 리스트 -> bytearray 변환
+    byte_buffer = bytearray()
+
+    curr = data_list
+    idx = 0
+    while not curr.isnil():
+        val_obj = car(curr)
+
+        # 정수인지 확인
+        if not val_obj.isint():
+            raise ErrType(f"{fname}: {idx}번째 데이터가 정수가 아닙니다.")
+
+        val = val_obj.value()
+
+        # 1바이트 범위(0~255) 확인
+        if val < 0 or val > 255:
+            raise ErrType(
+                f"{fname}: {idx}번째 값({val})이 바이트 범위(0-255)를 벗어났습니다."
+            )
+
+        byte_buffer.append(val)
+        curr = cdr(curr)
+        idx += 1
+
+    try:
+        with open(filename, "wb") as f:
+            f.write(byte_buffer)
+    except Exception as e:
+        raise ErrType(f"{fname}: 파일 쓰기 실패 - {e}")
+
+    return mkint(len(byte_buffer))
+
+
 # 환경
 #   mkenv(parent): 부모 환경이 parent인 환경을 만든다.
 #   envget(env, symbol): 환경 env에서 이름 symbol을 찾는다.
@@ -443,21 +489,20 @@ def mk_eval(expr: Data, env: Data) -> Data:
                 eprint(f"소스 파일 '{full_filename}'를 찾을 수 없습니다.")
                 return None
 
-            # 2. [중요] 현재 Reader 상태 백업 (Stack 구조 흉내)
-            # _parse.py의 YY_reader 객체 내부 변수들을 백업합니다.
+            # 현재 Reader 상태 백업 (Stack 구조 흉내)
+            # _parse.py의 YY_reader 객체 내부 변수들을 백업
             old_input = YY_reader._input
             old_LA = YY_reader._LA
             old_column = YY_reader._column
             old_depth = YY_reader._depth
 
-            # 3. "현재파일" 변수 업데이트 (중첩 load를 위해 필요)
-            # 파일 B가 또 다른 파일을 불러올 때를 대비해 환경 변수를 잠시 바꿔줍니다.
+            # "현재파일" 변수 업데이트 (중첩 load를 위해 필요)
+            # 파일 B가 또 다른 파일을 불러올 때를 대비해 환경 변수를 잠시 바꿔줌
             envset(env, mksym("현재파일"), mkstr(full_filename))
 
             try:
-                # 4. 새 파일 로드 및 실행
                 YY_reader.readfile(full_filename)
-                YY_reader.next_token()  # 첫 토큰 장전
+                YY_reader.next_token()  # 첫 토큰 준비
 
                 while YY_reader.remains() != "":
                     try:
@@ -470,7 +515,7 @@ def mk_eval(expr: Data, env: Data) -> Data:
                         break  # 오류 발생 시 해당 파일 로드 중단
 
             finally:
-                # 5. [중요] Reader 상태 및 환경 복구
+                # Reader 상태 및 환경 복구
                 YY_reader._input = old_input
                 YY_reader._LA = old_LA
                 YY_reader._column = old_column
@@ -572,6 +617,7 @@ def _main_e():
     envset(env, mksym("읽기"), mkbuiltin(builtin_read))
     envset(env, mksym("쓰기"), mkbuiltin(builtin_write))
     envset(env, mksym("줄바꿈"), mkbuiltin(builtin_newline))
+    envset(env, mksym("굽기"), mkbuiltin(builtin_save_file))
     # envset(env, mksym("_새글"), mkbuiltin(builtin_gensym))
 
     # load_file(env, "library_kor.scm")
