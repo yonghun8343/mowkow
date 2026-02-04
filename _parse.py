@@ -72,7 +72,7 @@ class Reader:
                 continue
             if s[0] in ";":
                 i = 0
-                while s[i] not in eols:
+                while i < len(s) and s[i] not in eols:
                     i += 1
                 s = s[i:]
                 self._input = s
@@ -210,6 +210,12 @@ def read_atom(s: str) -> Data:
     """read an integer, nil, or a string"""
     if s.isdigit() or (len(s) > 1 and (s[0] == "+" or s[0] == "-")):
         return mkint(int(s))
+    elif s.lower().startswith("#x"):
+        return mkint(int(s[2:], base=16))
+    elif s.lower().startswith("#o"):
+        return mkint(int(s[2:], base=8))
+    elif s.lower().startswith("#b"):
+        return mkint(int(s[2:], base=2))
     elif s == "공":
         return nil
     elif s[0] == '"':

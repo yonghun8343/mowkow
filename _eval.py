@@ -269,6 +269,14 @@ def builtin_write(args: Data, terminator="\n") -> None:
         print("()", end=terminator)
 
 
+def builtin_newline(args: Data) -> None:
+    """줄바꿈 함수: (줄바꿈) -> (출력 후 줄바꿈)"""
+    fname = "줄바꿈"
+    if not isvoid(args):
+        raise ErrArgs(f"<내장함수 '{fname}'>")
+    print()
+
+
 # 환경
 #   mkenv(parent): 부모 환경이 parent인 환경을 만든다.
 #   envget(env, symbol): 환경 env에서 이름 symbol을 찾는다.
@@ -563,6 +571,7 @@ def _main_e():
     envset(env, mksym("부정"), mkbuiltin(builtin_not))
     envset(env, mksym("읽기"), mkbuiltin(builtin_read))
     envset(env, mksym("쓰기"), mkbuiltin(builtin_write))
+    envset(env, mksym("줄바꿈"), mkbuiltin(builtin_newline))
     # envset(env, mksym("_새글"), mkbuiltin(builtin_gensym))
 
     # load_file(env, "library_kor.scm")

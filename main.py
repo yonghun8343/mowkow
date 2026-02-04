@@ -36,6 +36,7 @@ from _eval import (
     builtin_read,
     builtin_write,
     builtin_gensym,
+    builtin_newline,
 )
 
 import argparse
@@ -208,6 +209,7 @@ def main():
     envset(env, mksym("읽기"), mkbuiltin(builtin_read))
     envset(env, mksym("쓰기"), mkbuiltin(builtin_write))
     envset(env, mksym("_모"), mkbuiltin(builtin_gensym))
+    envset(env, mksym("줄바꿈"), mkbuiltin(builtin_newline))
 
     argparser = KoreanArgumentParser(description="머꼬 해석기", prog="mk")
 
