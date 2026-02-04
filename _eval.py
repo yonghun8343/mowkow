@@ -269,34 +269,12 @@ def builtin_write(args: Data, terminator="\n") -> None:
         print("()", end=terminator)
 
 
-def builtin_logand(args: Data) -> Data:
-    """(비트곱 12 10) -> 8"""
-    val = -1
-    p = args
-    while not p.isnil():
-        val &= car(p).value()
-        p = cdr(p)
-    return mkint(val)
-
-
-def builtin_logor(args: Data) -> Data:
-    """(비트합 1 2) -> 3"""
-    val = 0
-    p = args
-    while not p.isnil():
-        val |= car(p).value()
-        p = cdr(p)
-    return mkint(val)
-
-
-def builtin_logxor(args: Data) -> Data:
-    """(배타합 12 10) -> 6"""
-    val = 0
-    p = args
-    while not p.isnil():
-        val ^= car(p).value()
-        p = cdr(p)
-    return mkint(val)
+def builtin_newline(args: Data) -> None:
+    """줄바꿈 함수: (줄바꿈) -> (출력 후 줄바꿈)"""
+    fname = "줄바꿈"
+    if not isvoid(args):
+        raise ErrArgs(f"<내장함수 '{fname}'>")
+    print()
 
 
 # 환경
@@ -321,8 +299,6 @@ def envget(env: Data, symbol: Data) -> Data:
         if car(bind).value() == symbol.value():
             return cdr(bind)
         binds = cdr(binds)
-    print(env)
-    print(symbol)
     if parent.isnil():
         raise ErrUnbound(symbol.value())
     return envget(parent, symbol)
@@ -595,6 +571,7 @@ def _main_e():
     envset(env, mksym("부정"), mkbuiltin(builtin_not))
     envset(env, mksym("읽기"), mkbuiltin(builtin_read))
     envset(env, mksym("쓰기"), mkbuiltin(builtin_write))
+    envset(env, mksym("줄바꿈"), mkbuiltin(builtin_newline))
     # envset(env, mksym("_새글"), mkbuiltin(builtin_gensym))
 
     # load_file(env, "library_kor.scm")
