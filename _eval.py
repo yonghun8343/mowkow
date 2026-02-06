@@ -245,12 +245,21 @@ def builtin_read(args: Data) -> Data:
     if not isvoid(args):
         raise ErrArgs(f"<내장함수 '{fname}'>")
     line = input("").strip()
-    if line.isdigit():
+    if line[0] == "0" and all(c in "01234567" for c in line[1:]):
+        return mkint(int(line, base=8))
+    elif line.isdigit():
         return mkint(int(line))
     elif line.isalpha():
         return mksym(line)
     elif line[0] == line[-1] == '"':  # "문자열"
         return mkstr(line)
+    elif line[:2] in ["0x", "0X"] and all(c in "0123456789abcedfABCDEF" for c in line[2:]):
+        return mkint(int(line, base=16))
+    elif line[:2] in ["0육"] and all(c in "0123456789abcedfABCDEFㄱㄴㄷㄹㅁㅂ" for c in line[2:]):
+        new_lit = line.replace("0육", "0x")
+        for i, lit in enumerate("ㄱㄴㄷㄹㅁㅂ"):
+            new_lit = new_lit.replace(lit, chr(ord('A')+i))
+        return mkint(int(new_lit, base=16))
     else:
         raise ErrType(f"<내장함수 '{fname}'>")
 
