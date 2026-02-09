@@ -192,6 +192,13 @@ def read_atom(s: str) -> Data:
     """read an integer, nil, or a string"""
     if s.isdigit() or (len(s) > 1 and (s[0] == '+' or s[0] == '-')):
         return mkint(int(s))
+    elif s[:2] in ["0x", "0X"] and all(c in "0123456789abcedfABCDEF" for c in s[2:]):
+        return mkint(int(s, base=16))
+    elif s[:2] in ["0육"] and all(c in "0123456789abcedfABCDEFㄱㄴㄷㄹㅁㅂ" for c in s[2:]):
+        new_lit = s.replace("0육", "0x")
+        for i, lit in enumerate("ㄱㄴㄷㄹㅁㅂ"):
+            new_lit = new_lit.replace(lit, chr(ord('A')+i))
+        return mkint(int(new_lit, base=16))
     elif s == '공':
         return nil
     elif s[0] == '"':
