@@ -253,9 +253,9 @@ def builtin_read(args: Data) -> Data:
         return mksym(line)
     elif line[0] == line[-1] == '"':  # "문자열"
         return mkstr(line)
-    elif line[:2] in ["0x", "0X"] and all(c in "0123456789abcedfABCDEF" for c in line[2:]):
+    elif line[:2] in ["0x", "0X"] and all(c in "0123456789abcdefABCDEF" for c in line[2:]):
         return mkint(int(line, base=16))
-    elif line[:2] in ["0육"] and all(c in "0123456789abcedfABCDEFㄱㄴㄷㄹㅁㅂ" for c in line[2:]):
+    elif line[:2] in ["0육"] and all(c in "0123456789abcdefABCDEFㄱㄴㄷㄹㅁㅂ" for c in line[2:]):
         new_lit = line.replace("0육", "0x")
         for i, lit in enumerate("ㄱㄴㄷㄹㅁㅂ"):
             new_lit = new_lit.replace(lit, chr(ord('A')+i))
