@@ -51,77 +51,77 @@ def builtin_car(args: Data) -> Data:
     '''머리 함수: (car (a b)) -> a'''
     if not isunary(args):
         raise ErrArgs("머")
-    if car(args).isnil():
+    if car(args).isnil(): # pyright: ignore[reportArgumentType]
         return nil              # 본래는 오류여야 함
-    if not car(args).ispair():
+    if not car(args).ispair(): # pyright: ignore[reportArgumentType]
         raise ErrType("머")
-    return car(car(args))
+    return car(car(args)) # pyright: ignore[reportArgumentType]
 
 def builtin_cdr(args: Data) -> Data:
     '''꼬리 함수: (cdr (a b)) -> b'''
     if not isunary(args):
         raise ErrArgs("꼬")
-    if car(args).isnil():
+    if car(args).isnil(): # pyright: ignore[reportArgumentType]
         return nil              # 본래는 오류여야 함
-    if not car(args).ispair():
+    if not car(args).ispair(): # pyright: ignore[reportArgumentType]
         raise ErrType("꼬")
-    return cdr(car(args))
+    return cdr(car(args)) # pyright: ignore[reportArgumentType]
 
 def builtin_cons(args: Data) -> Data:
     '''짝 함수: (cons a b) -> (a . b)'''
     if not isbinary(args):
         raise ErrArgs("짝")
-    return cons(car(args), car(cdr(args)))
+    return cons(car(args), car(cdr(args)))  # pyright: ignore[reportArgumentType]
 
 def builtin_add(args: Data) -> Data:
     '''덧셈 함수: (+ 1 2) -> 3'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '+'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '+'>")
-    return mkint(a.value() + b.value())
+    return mkint(a.value() + b.value())     # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_sub(args: Data) -> Data:
     '''뺄셈 함수: (- 3 2) -> 1'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '-'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '-'>")
-    return mkint(a.value() - b.value())
+    return mkint(a.value() - b.value())     # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_mul(args: Data) -> Data:
     '''곱셈 함수: (* 2 3) -> 6'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '*'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '*'>")
-    return mkint(a.value() * b.value())
+    return mkint(a.value() * b.value())     # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_div(args: Data) -> Data:
     '''나눗셈 함수: (/ 6 3) -> 2'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '/'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '/'>")
-    return mkint(a.value() // b.value())
+    return mkint(a.value() // b.value())    # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_inteq(args: Data) -> Data:
     '''정수 같다 함수: (= 1 1) -> #참'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '='>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '='>")
-    return mksym("#참") if a.value() == b.value() else nil
+    return mksym("#참") if a.value() == b.value() else nil  # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_intlt(args: Data) -> Data:
     '''정수 작다 함수: (< 1 2) -> #참'''
@@ -131,24 +131,24 @@ def builtin_intlt(args: Data) -> Data:
     b = car(cdr(args))
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '<'>")
-    return mksym("#참") if a.value() < b.value() else nil
+    return mksym("#참") if a.value() < b.value() else nil   # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_intgt(args: Data) -> Data:
     '''정수 크다 함수: (> 1 2) -> 공'''
     if not isbinary(args):
         raise ErrArgs("<내장함수 '>'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if not a.isint() or not b.isint():
         raise ErrType("<내장함수 '>'>")
-    return mksym("#참") if a.value() > b.value() else nil
+    return mksym("#참") if a.value() > b.value() else nil   # pyright: ignore[reportAttributeAccessIssue]
 
 def builtin_apply(args: Data) -> Data:
     '''함수 적용 함수: (apply fn args) -> (fn . args)'''
     if not isbinary(args):
         raise ErrArgs("적용")
-    fn = car(args)
-    args = car(cdr(args))
+    fn = car(args)                          # pyright: ignore[reportArgumentType]
+    args = car(cdr(args))                   # pyright: ignore[reportArgumentType]
     if not islist(args):
         raise ErrSyntax()
     return apply(fn, args)
@@ -157,17 +157,17 @@ def builtin_eq(args: Data) -> Data:
     '''같다? 함수: (eq a b) -> #참'''
     if not isbinary(args):
         raise ErrArgs("같다?")
-    a, b = car(args), car(cdr(args))
+    a, b = car(args), car(cdr(args))        # pyright: ignore[reportArgumentType]
     if a.isnil() and b.isnil():
         eq = True
     elif a.issymbol() and b.issymbol() or a.isint() and b.isint():
-        eq = a.value() == b.value()
+        eq = a.value() == b.value()         # pyright: ignore[reportAttributeAccessIssue]
     elif a.isbuiltin() and b.isbuiltin():
-        eq = a.fun() == b.fun()
+        eq = a.fun() == b.fun()             # pyright: ignore[reportAttributeAccessIssue]
     elif a.ispair() and b.ispair():
-        eq = a.car() == b.car() and a.cdr() == b.cdr()
+        eq = a.car() == b.car() and a.cdr() == b.cdr()  # pyright: ignore[reportAttributeAccessIssue]
     elif a.isclosure() and b.isclosure() or a.ismacro() and b.ismacro():
-        eq = a.val() == b.val()
+        eq = a.val() == b.val()             # pyright: ignore[reportAttributeAccessIssue]
     else:
         eq = False
     return mksym("#참") if eq else nil
@@ -176,28 +176,28 @@ def builtin_ispair(args: Data) -> Data:
     '''짝? 함수: (짝? (a b)) -> #참'''
     if not isunary(args):
         raise ErrArgs("<내장함수 '짝?'>")
-    return mksym("#참") if car(args).ispair() else nil
+    return mksym("#참") if car(args).ispair() else nil  # pyright: ignore[reportArgumentType]
 
 def builtin_isnil(args: Data) -> Data:
     '''공? 함수: (공? (a b)) -> #참'''
     if not isunary(args):
         raise ErrArgs("<내장함수 '공?'>")
-    return mksym("#참") if car(args).isnil() else nil
+    return mksym("#참") if car(args).isnil() else nil   # pyright: ignore[reportArgumentType]
 
 def builtin_not(args: Data) -> Data:
     '''부정 함수: (부정 #참) -> 공'''       # (부정 #참) -> 공, (부정 공) -> #참 (cf. 반 for 반대)
     if not isunary(args):
         raise ErrArgs("<내장함수 '부정'>")
-    return mksym("#참") if car(args).isnil() else nil
+    return mksym("#참") if car(args).isnil() else nil # pyright: ignore[reportArgumentType]
 
 def builtin_and(args: Data) -> Data:
     '''그리고 함수: (그리고 #참 #참) -> #참'''     # (그리고 #참 #참) -> #참, (그리고 #참 공) -> 공 (cf. 다 for 모두다)
     fname = "그리고"
     if not isbinary(args):
         raise ErrArgs(f"<내장함수 '{fname}'>")
-    a = car(args)
-    b = car(cdr(args))
-    if a.issymbol() and a.value() == "#참":
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
+    if a.issymbol() and a.value() == "#참":     # pyright: ignore[reportAttributeAccessIssue]
         return b
     elif a.isnil():
         return nil
@@ -209,8 +209,8 @@ def builtin_or(args: Data) -> Data:
     fname = "또는"      # 혹
     if not isbinary(args):
         raise ErrArgs(f"<내장함수 '{fname}'>")
-    a = car(args)
-    b = car(cdr(args))
+    a = car(args)                           # pyright: ignore[reportArgumentType]
+    b = car(cdr(args))                      # pyright: ignore[reportArgumentType]
     if a.isnil():
         return b
     else:
@@ -226,21 +226,30 @@ def builtin_read(args: Data) -> Data:
     if not isvoid(args):
         raise ErrArgs(f"<내장함수 '{fname}'>")
     line = input("").strip()
-    if line.isdigit():
+    if line[0] == "0" and all(c in "01234567" for c in line[1:]):
+        return mkint(int(line, base=8))
+    elif line.isdigit():
         return mkint(int(line))
     elif line.isalpha():
         return mksym(line)
     elif line[0] == line[-1] == '"':    # "문자열"
         return mkstr(line)
+    elif line[:2] in ["0x", "0X"] and all(c in "0123456789abcedfABCDEF" for c in line[2:]):
+        return mkint(int(line, base=16))
+    elif line[:2] in ["0육"] and all(c in "0123456789abcedfABCDEFㄱㄴㄷㄹㅁㅂ" for c in line[2:]):
+        new_lit = line.replace("0육", "0x")
+        for i, lit in enumerate("ㄱㄴㄷㄹㅁㅂ"):
+            new_lit = new_lit.replace(lit, chr(ord('A')+i))
+        return mkint(int(new_lit, base=16))
     else:
         raise ErrType(f"<내장함수 '{fname}'>")
 
 def builtin_write(args: Data, terminator="\n") -> None:
-    '''출력 함수: (쓰기 123) -> 123'''     # (쓰기 123) -> 123 (cf. 출력)
+    '''출력 함수: (쓰기 123) -> 123'''    # (쓰기 123) -> 123 (cf. 출력)
     fname = "출력"
     if not isunary(args):
         raise ErrArgs(f"<내장함수 '{fname}'>")
-    a = car(args)
+    a = car(args)                           # pyright: ignore[reportArgumentType]
     if a.issymbol() or a.isint() or a.ispair() or a.isbuiltin():
         print(a, end=terminator)
     elif a.isstr():
@@ -261,28 +270,28 @@ def mkenv(parent: Data) -> Data:
 
 def envget(env: Data, symbol: Data) -> Data:
     '''환경 env에서 이름 symbol을 찾는다. 없으면 ErrUnbound 발생'''
-    parent = env.car()
-    binds  = env.cdr()
+    parent = env.car()                          # pyright: ignore[reportAttributeAccessIssue]
+    binds  = env.cdr()                          # pyright: ignore[reportAttributeAccessIssue]
     while not binds.isnil():
-        bind = car(binds)
-        if car(bind).value() == symbol.value():
-            return cdr(bind)
-        binds = cdr(binds)
+        bind = car(binds)                       # pyright: ignore[reportArgumentType]
+        if car(bind).value() == symbol.value(): # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+            return cdr(bind)                    # pyright: ignore[reportArgumentType]
+        binds = cdr(binds)                      # pyright: ignore[reportArgumentType]
     if parent.isnil():
-        raise ErrUnbound(symbol.value())
+        raise ErrUnbound(symbol.value())        # pyright: ignore[reportAttributeAccessIssue]
     return envget(parent, symbol)        
 
 def envset(env: Data, symbol: Data, value: Data) -> None:
     '''환경에 symbol = value를 추가한다.'''
-    binds = cdr(env)
+    binds = cdr(env)                            # pyright: ignore[reportArgumentType]
     while not binds.isnil():
-        bind = car(binds)
-        if car(bind).value() == symbol.value():
-            bind.setcdr(value)              # modify the entry found
+        bind = car(binds)                       # pyright: ignore[reportArgumentType]
+        if car(bind).value() == symbol.value(): # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+            bind.setcdr(value)              # modify the entry found  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             return
-        binds = cdr(binds)
+        binds = cdr(binds)                      # pyright: ignore[reportArgumentType]
     bind = cons(symbol, value)              # new entry
-    env.setcdr(cons(bind, cdr(env)))        # prepend a new entry
+    env.setcdr(cons(bind, cdr(env)))        # prepend a new entry  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
 
 def mk_eval(expr: Data, env: Data) -> Data:
     '''수식 expr을 환경 env에서 계산한다.'''
@@ -292,27 +301,27 @@ def mk_eval(expr: Data, env: Data) -> Data:
         return expr
     if not islist(expr):    # 순차 수식은 허용하지 않음
         raise ErrSyntax()
-    fun  = car(expr)
-    args = cdr(expr)
+    fun  = car(expr)        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+    args = cdr(expr)        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
     if fun.issymbol():      # bug_230104e: keyword parts are guarded
-        if fun.value() == "인용":       # 키워드 '인용'(quote) 처리: (인용 exp)
+        if fun.value() == "인용":       # pyright: ignore[reportAttributeAccessIssue] # 키워드 '인용'(quote) 처리: (인용 exp)
             if not isunary(args):
                 raise ErrArgs("인용")
-            return car(args)
-        if fun.value() == "정의":       # 키워드 '정의'(define) 처리: (정의 sym exp)
+            return car(args)            # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        if fun.value() == "정의":       # pyright: ignore[reportAttributeAccessIssue] # 키워드 '정의'(define) 처리: (정의 sym exp)
             if not isbinary(args):
                 raise ErrArgs("정의")
-            sym = car(args)
+            sym = car(args)             # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             if sym.ispair():
-                val = mkclosure(env, cdr(sym), cdr(args))
-                sym = car(sym)
+                val = mkclosure(env, cdr(sym), cdr(args))   # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+                sym = car(sym)          # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 if not sym.issymbol():
                     raise ErrType("정의")
             elif sym.issymbol():
                 ## Duplication for not isbianry(args) is true.
                 # if not cdr(cdr(args)).isnil():
                 #     raise ErrArgs("define")
-                exp = car(cdr(args))
+                exp = car(cdr(args))    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 val = mk_eval(exp, env)
             else: # not sym.issymbol():
                 raise ErrType("정의")
@@ -320,64 +329,69 @@ def mk_eval(expr: Data, env: Data) -> Data:
             if IsVerbose:
                 eprint(sym)
             return None
-        if fun.value() == "람다":       # 키워드 '람다'(lambda) 처리: (람다 (params) body)
+        if fun.value() == "람다":        # pyright: ignore[reportAttributeAccessIssue] 
+            # 키워드 '람다'(lambda) 처리: (람다 (params) body)
             if not isbinary(args):
                 raise ErrArgs("람다")
-            return mkclosure(env, car(args), cdr(args))
-        if fun.value() == "만약":       # 키워드 '만약'(if) 처리: (만약 cond tval fval)
+            return mkclosure(env, car(args), cdr(args))     # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        if fun.value() == "만약":        # pyright: ignore[reportAttributeAccessIssue] 
+            # 키워드 '만약'(if) 처리: (만약 cond tval fval)
             if not isternary(args):
                 raise ErrArgs("만약")
-            cond = mk_eval(car(args), env)
-            tval = car(cdr(args))
-            fval = car(cdr(cdr(args)))
+            cond = mk_eval(car(args), env)      # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+            tval = car(cdr(args))               # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+            fval = car(cdr(cdr(args)))          # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             val = fval if cond.isnil() else tval
             return mk_eval(val, env)
-        if fun.value() == "조건":       # 키워드 '조건'(cond) 처리: (조건 (cond1 val1) (cond2 val2) ...)
+        if fun.value() == "조건":        # pyright: ignore[reportAttributeAccessIssue] 
+            # 키워드 '조건'(cond) 처리: (조건 (cond1 val1) (cond2 val2) ...)
             if isvoid(args):
                 raise ErrArgs("조건")
             while not args.isnil():
-                clause = car(args)
+                clause = car(args)              # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 if not clause.ispair():
                     raise ErrSyntax()
-                if not cdr(clause).ispair():
+                if not cdr(clause).ispair():    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                     raise ErrSyntax()
-                cond = mk_eval(car(clause), env)
-                val = car(cdr(clause))
+                cond = mk_eval(car(clause), env)    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+                val = car(cdr(clause))              # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 if not cond.isnil():
                     return mk_eval(val, env)
-                args = cdr(args)
+                args = cdr(args)                # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             return nil
-        if fun.value() == "매크로":     # 키워드 '매크로'(defmacro) 처리: (매크로 (name params) body)
+        if fun.value() == "매크로":      # pyright: ignore[reportAttributeAccessIssue]
+            # 키워드 '매크로'(defmacro) 처리: (매크로 (name params) body)
             if not isbinary(args):
                 raise ErrArgs("매크로")
-            if not car(args).ispair():
+            if not car(args).ispair():          # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 raise ErrSyntax()
-            name = car(car(args))
+            name = car(car(args))               # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             if not name.issymbol():
                 raise ErrType("매크로")
-            macro = mkmacro(env, cdr(car(args)), cdr(args))
+            macro = mkmacro(env, cdr(car(args)), cdr(args))     # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             envset(env, name, macro)
             if IsVerbose:
                 eprint(name)
             return None
-        if fun.value() == "잠시":       # 키워드 '잠시'(let) 처리 (잠시 ((name val) ...) body)
+        if fun.value() == "잠시":        # pyright: ignore[reportAttributeAccessIssue]
+            # 키워드 '잠시'(let) 처리 (잠시 ((name val) ...) body)
             if not isbinary(args):
                 raise ErrArgs("잠시")
-            bnds = car(args)
-            body = car(cdr(args))
+            bnds = car(args)            # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+            body = car(cdr(args))       # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             local_env = mkenv(env)
             while not bnds.isnil():
-                if not car(bnds).ispair():
+                if not car(bnds).ispair():  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                     raise ErrSyntax()
-                abnd = car(bnds)
+                abnd = car(bnds)            # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 if not abnd.ispair():           # '잠시'의 한 바인딩이 pair가 아닌 경우
                     raise ErrType("잠시")
-                if not car(abnd).issymbol():    # '잠시'의 한 바인딩의 이름이 symbol이 아닌 경우
+                if not car(abnd).issymbol():    # '잠시'의 한 바인딩의 이름이 symbol이 아닌 경우        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                     raise ErrType("잠시")
-                sym = car(abnd)
-                val = mk_eval(car(cdr(abnd)), local_env)   # '잠시'의 한 바인딩의 값 계산(let*로 처리)
+                sym = car(abnd)             # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+                val = mk_eval(car(cdr(abnd)), local_env)   # '잠시'의 한 바인딩의 값 계산(let*로 처리)  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
                 envset(local_env, sym, val)             # '잠시'의 한 바인딩을 환경 local_env에 추가
-                bnds = cdr(bnds)
+                bnds = cdr(bnds)            # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
             val = mk_eval(body, local_env)                 # '잠시'의 body 계산
             # env는 그대로이므로 local_env를 삭제하고 회복하는 과정이 필요 없음
             return val
@@ -388,10 +402,10 @@ def mk_eval(expr: Data, env: Data) -> Data:
     fn = mk_eval(fun, env)     # eval the function part
 
     if fn.ismacro():        # if the function is a macro
-        mval = fn.val()
+        mval = fn.val()             # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
         menv = car(mval)
-        mparams = car(cdr(mval))
-        mbody = cdr(cdr(mval))
+        mparams = car(cdr(mval))    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        mbody = cdr(cdr(mval))      # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
         newfn = mkclosure(menv, mparams, mbody)
         expansion = apply(newfn, args)
         return mk_eval(expansion, env)
@@ -400,8 +414,8 @@ def mk_eval(expr: Data, env: Data) -> Data:
     args = cplist(args)     # copy the argument list
     p = args
     while not p.isnil():
-        p.setcar(mk_eval(car(p), env))
-        p = cdr(p)
+        p.setcar(mk_eval(car(p), env))  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        p = cdr(p)                      # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
     return apply(fn, args)
     # if not fun.issymbol():      
         # raise ErrSyntax()
@@ -413,19 +427,22 @@ def isunary(args):
     return not args.isnil() and cdr(args).isnil()
 
 def isbinary(args):
-    return not args.isnil() and not cdr(args).isnil() and cdr(cdr(args)).isnil()
+    return not args.isnil() and not cdr(args).isnil() and cdr(cdr(args)).isnil()    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
 
 def isternary(args):
-    return not args.isnil() and not cdr(args).isnil() and not cdr(cdr(args)).isnil() and cdr(cdr(cdr(args))).isnil()
+    return not args.isnil() and not cdr(args).isnil() and not cdr(cdr(args)).isnil() and cdr(cdr(cdr(args))).isnil()    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
 
 def apply(fn: Data, args: Data) -> Data:
     if fn.isbuiltin():
-        return fn.fun()(args)
+        return fn.fun()(args) # pyright: ignore[reportAttributeAccessIssue]
     if not fn.isclosure():
         raise ErrType("<#클로저>")
-    env = mkenv(fn.env())       # bug_230104b: mkenv(car(fn)) -> mkenv(fn.env())
-    params = fn.params()        # bug_230104c: car(cdr(fn))   -> fn.params()
-    body = fn.body()            # bug_230104d: cdr(cdr(fn))   -> fn.body()
+    env = mkenv(fn.env())       # pyright: ignore[reportAttributeAccessIssue] 
+    # bug_230104b: mkenv(car(fn)) -> mkenv(fn.env())
+    params = fn.params()        # pyright: ignore[reportAttributeAccessIssue] 
+    # bug_230104c: car(cdr(fn))   -> fn.params()
+    body = fn.body()            # pyright: ignore[reportAttributeAccessIssue] 
+    # bug_230104d: cdr(cdr(fn))   -> fn.body()
     while not params.isnil():
         if params.issymbol():   # for the variadic parameter (ch 10)
             envset(env, params, args)
@@ -433,14 +450,14 @@ def apply(fn: Data, args: Data) -> Data:
             break
         if args.isnil():        # for normal parameters
             raise ErrArgs("<#클로저>")
-        envset(env, car(params), car(args))
-        params = cdr(params)
-        args = cdr(args)
+        envset(env, car(params), car(args))     # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        params = cdr(params)                    # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        args = cdr(args)                        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
     if not args.isnil():
         raise ErrArgs("<#클로저>")
     while not body.isnil():     # q_230102: 왜 body를 계속 계산하나? 수식 하나 아닌가?
-        result = mk_eval(car(body), env)
-        body = cdr(body)
+        result = mk_eval(car(body), env)        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
+        body = cdr(body)                        # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
     return result
 
 def _main_e():

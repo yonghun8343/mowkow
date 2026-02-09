@@ -69,8 +69,8 @@ class Pair(Data):
         tail = self._cdr
         while not tail.isnil():
             if tail.ispair():               # Bug230111: self.cdr.ispair() -> tail.ispair()
-                rval += f" {tail._car}"
-                tail = tail._cdr
+                rval += f" {tail._car}"     # type: ignore
+                tail = tail._cdr            # type: ignore
             else:
                 rval += f" . {tail}"
                 break                       # break가 꼭 필요함
@@ -140,7 +140,7 @@ class Closure(Data):
                 break
             elif not p.ispair() or not car(p).issymbol():
                 raise ErrType("<#클로저>")
-            p = cdr(p)
+            p = cdr(p)          # pyright: ignore[reportArgumentType]
         self._val = cons(env, cons(params, body))
     def isclosure(self) -> bool:
         return not super().isclosure()
@@ -149,11 +149,11 @@ class Closure(Data):
     def val(self) -> Data:          # returns the closure value (lambda)
         return self._val
     def env(self) -> Data:
-        return car(self._val)
+        return car(self._val)       # pyright: ignore[reportArgumentType]
     def params(self) -> Data:
-        return car(cdr(self._val))
+        return car(cdr(self._val))  # pyright: ignore[reportArgumentType]
     def body(self) -> Data:
-        return cdr(cdr(self._val))
+        return cdr(cdr(self._val))  # pyright: ignore[reportArgumentType]
 
 class Macro(Data):
     def __init__(self, env: Data, params: Data, body: Data):
@@ -165,7 +165,7 @@ class Macro(Data):
                 break
             elif not p.ispair() or not car(p).issymbol():
                 raise ErrType("<#매크로>")
-            p = cdr(p)
+            p = cdr(p)          # pyright: ignore[reportArgumentType]
         self._val = cons(env, cons(params, body))
     def ismacro(self) -> bool:
         return True
@@ -208,26 +208,27 @@ def islist(d: Data) -> bool:
     if d.isnil():
         return True
     else:
-        return d.ispair() and islist(cdr(d))        # Bug_20230104_a: cdr(d).ispair() -> islist(cdr(d))
+        return d.ispair() and islist(cdr(d))        # pyright: ignore[reportArgumentType] 
+        # Bug_20230104_a: cdr(d).ispair() -> islist(cdr(d))
 
 def cplist(ls: Data) -> Data:
     if ls.isnil():
         return nil
-    head = cons(car(ls), nil)
+    head = cons(car(ls), nil)               # pyright: ignore[reportArgumentType]
     prev = head
-    ls = cdr(ls)
+    ls = cdr(ls)                            # pyright: ignore[reportArgumentType]
     while not ls.isnil():
-        prev.setcdr(cons(car(ls), nil))
-        prev = cdr(prev)
-        ls = cdr(ls)
+        prev.setcdr(cons(car(ls), nil))     # pyright: ignore[reportAttributeAccessIssue, reportArgumentType]
+        prev = cdr(prev)        # pyright: ignore[reportArgumentType]
+        ls = cdr(ls)            # pyright: ignore[reportArgumentType]
     return head
 
 def allsymbols(params: Data) -> None:
     p = params
     while not p.isnil():
-        if not car(p).issymbol():
+        if not car(p).issymbol():       # pyright: ignore[reportArgumentType]
             raise ErrType("<#클로저>")
-        p = cdr(p)
+        p = cdr(p)                      # pyright: ignore[reportArgumentType]
 
 if __name__ == '__main__':
     print(mkint(1910))
