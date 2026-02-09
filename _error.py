@@ -32,7 +32,7 @@ class ErrUnbound(ErrLisp):
         self.symname = sym
 
     def __str__(self: ErrLisp) -> str:
-        return f"이름 '{self.symname}'을(를) 찾을 수 없습니다."
+        return f"이름 '{self.symname}'을(를) 찾을 수 없습니다."  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class ErrArgs(ErrLisp):
@@ -40,7 +40,7 @@ class ErrArgs(ErrLisp):
         self.funname = fun
 
     def __str__(self: ErrLisp) -> str:
-        return f"함수 {self.funname}: 인수 개수 오류입니다."
+        return f"함수 {self.funname}: 인수 개수 오류입니다."  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class ErrType(ErrLisp):
@@ -48,4 +48,4 @@ class ErrType(ErrLisp):
         self.funname = fun
 
     def __str__(self: ErrLisp) -> str:
-        return f"함수 {self.funname}: 타입 오류입니다."
+        return f"함수 {self.funname}: 타입 오류입니다."  # pyright: ignore[reportAttributeAccessIssue]
