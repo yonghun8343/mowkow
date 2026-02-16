@@ -122,7 +122,8 @@ def resource_path(relative_path):
         # PyInstaller가 사용하는 환경변수 _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath(".")
+        # 현재 파일을 기준으로 경로 설정
+        base_path = os.path.dirname(os.path.abspath(__file__))
 
     return os.path.join(base_path, relative_path)
 
