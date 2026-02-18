@@ -333,13 +333,17 @@ def builtin_save_file(args: Data) -> Data:
 
         val = val_obj.value()
 
-        # 1바이트 범위(0~255) 확인
-        if val < 0 or val > 255:
+        # (부호 있는 8비트 정수 -128까지 허용 + 부호 없는 255까지 허용)
+        if val < -128 or val > 255:
             raise ErrType(
-                f"{fname}: {idx}번째 값({val})이 바이트 범위(0-255)를 벗어났습니다."
+                f"{fname}: {idx}번째 값({val})이 1바이트 범위(-128 ~ 255)를 벗어났습니다."
             )
+        
+        # 음수를 2의 보수(unsigned byte)로 변환
+        # 예: -18 & 0xFF -> 238 (0xEE)
+        unsigned_val = val & 0xFF
 
-        byte_buffer.append(val)
+        byte_buffer.append(unsigned_val)
         curr = cdr(curr)
         idx += 1
 

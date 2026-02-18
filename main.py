@@ -9,6 +9,9 @@ import sys
 import argparse
 from typing import Any, Dict, List, Optional, Sequence, Iterable, NoReturn
 
+# 한계치 늘리기 (임시 해결책)
+sys.setrecursionlimit(3000)
+
 from _data import Data, nil, mksym, mkbuiltin, mkstr
 from _parse import YY_reader, read_expr
 from _error import IsVerbose, eprint, ErrLisp
