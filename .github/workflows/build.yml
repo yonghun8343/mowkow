@@ -2,7 +2,7 @@ name: Build Mowkow Executables
 
 on:
   push:
-    branches: [release] # release 브랜치에 푸시될 때마다 실행
+    branches: [feature-mowkowOS] # release 브랜치에 푸시될 때마다 실행
 
 jobs:
   build:
