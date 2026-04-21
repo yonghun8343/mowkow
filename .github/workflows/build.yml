@@ -35,6 +35,11 @@ jobs:
         run: |
           pyinstaller --onefile --add-data "library_kor.scm:." main.py --name mk --distpath dist2
 
+      - name: Ad-hoc Code Sign for macOS
+        if: runner.os == 'macOS'
+        run: |
+          codesign --force --deep -s - dist2/mk
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
