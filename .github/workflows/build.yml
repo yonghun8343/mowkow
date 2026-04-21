@@ -14,7 +14,7 @@ jobs:
         # windows-latest: 윈도우
         # macos-13: 인텔 맥 (Intel)
         # macos-14: 애플 실리콘 맥 (ARM)
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, windows-latest, macos-15-intel, macos-latest]
 
     steps:
       - name: Checkout Code
