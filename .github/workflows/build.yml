@@ -33,7 +33,7 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile main.py --name mk --distpath dist2
+          pyinstaller --onefile --add-data "library_kor.scm:." main.py --name mk --distpath dist2
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
