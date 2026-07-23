@@ -163,7 +163,15 @@ class Reader:
 
 YY_reader = Reader()   # The historical prefix "YY_" is attached to make it global
 
-def read_expr() -> Data:
+def _attach_line(data, line):
+    if data is not None and not data.isnil():
+        try:
+            data.line = line
+        except AttributeError:
+            pass
+    return data
+
+def _read_expr_inner() -> Data:
     if YY_reader.LA() == "(":
         data = read_list()
         return data
@@ -207,6 +215,11 @@ def read_expr() -> Data:
         _ = YY_reader.next_token()
         return data
     # for test: return mkint(1910)
+
+def read_expr() -> Data:
+    line = YY_reader.line()
+    data = _read_expr_inner()
+    return _attach_line(data, line)
 
 def read_atom(s: str) -> Data:
     """read an integer, nil, or a string"""
@@ -254,6 +267,17 @@ def read_list() -> Data:
     YY_reader.match(')')
     YY_reader.next_token()
     return lst
+
+def parse_string(src: str) -> list:
+    """소스 문자열을 최상위 식(Data) 리스트로 파싱한다."""
+    YY_reader._input = src
+    YY_reader._depth = 0
+    YY_reader.resetpos()
+    exprs = []
+    YY_reader.next_token()
+    while YY_reader.LA() != "":
+        exprs.append(read_expr())
+    return exprs
 
 def _main_p():
     """test function for parsing"""
